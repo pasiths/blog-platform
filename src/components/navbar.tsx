@@ -80,7 +80,13 @@ export function Navbar() {
             icon: <PenLine size={18} />,
           },
         ]
-      : []),
+      : [
+          {
+            name: "Request Writer",
+            href: "#",
+            icon: <PenLine size={18} />,
+          },
+        ]),
   ];
 
   return (
