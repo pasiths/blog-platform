@@ -1,25 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { IsEditor, IsSession } from "@/lib/utils";
 import { ArrowRight, Edit3, Heart, PenLine, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
-  const session = null; // Simulating no session for demonstration
-  // const session = {
-  //   user: {
-  //     role: "READER", // Replace with dynamic session data when available
-  //   },
-  // };
-
-  // Check user role
-  let isEditor: boolean = false;
-  if (session) {
-    const session: { user: { role: string } } = { user: { role: "READER" } }; // Simulating session data for demonstration
-    const isAdmin = session?.user?.role === "ADMIN";
-    isEditor = session?.user?.role === "EDITOR" || isAdmin;
-  }
+  const session = IsSession;
+  const isEditor = IsEditor; // Simulating no editor role for demonstration
 
   return (
     <main>
@@ -62,7 +51,7 @@ export default function Home() {
                   </>
                 ) : (
                   <Button size="lg" asChild>
-                    <Link href="#" className="flex items-center ">
+                    <Link href="/sign-in" className="flex items-center ">
                       <Users className="mr-2 h-4 w-4" />
                       Join Us
                     </Link>
@@ -165,33 +154,32 @@ export default function Home() {
               Join our community of writers and readers today.
             </p>
             <div className="mt-8">
-            {session ? (
-                  <>
-                    {isEditor ? (
-                      <Button size="lg" asChild>
-                        <Link href="#" className="flex items-center ">
-                          <Edit3 className="mr-2 h-4 w-4" />
-                          Create Post
-                        </Link>
-                      </Button>
-                    ) : (
-                      <Button size="lg" asChild>
-                        <Link href="#" className="flex items-center ">
-                          <PenLine className="mr-2 h-4 w-4" />
-                          Request Writer
-                        </Link>
-                      </Button>
-                    )}
-                  </>
-                ) : (
-                  <Button size="lg" asChild>
-                    <Link href="#" className="flex items-center ">
-                      Get Started
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                )}
-              
+              {session ? (
+                <>
+                  {isEditor ? (
+                    <Button size="lg" asChild>
+                      <Link href="#" className="flex items-center ">
+                        <Edit3 className="mr-2 h-4 w-4" />
+                        Create Post
+                      </Link>
+                    </Button>
+                  ) : (
+                    <Button size="lg" asChild>
+                      <Link href="#" className="flex items-center ">
+                        <PenLine className="mr-2 h-4 w-4" />
+                        Request Writer
+                      </Link>
+                    </Button>
+                  )}
+                </>
+              ) : (
+                <Button size="lg" asChild>
+                  <Link href="/sign-in" className="flex items-center ">
+                    Get Started
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              )}
             </div>
           </div>
         </div>

@@ -19,14 +19,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { IsEditor, IsSession } from "@/lib/utils";
 
 export function Navbar() {
-  const session = null; // Simulating no session for demonstration
-  // const session = {
-  //   user: {
-  //     role: "READER", // Replace with dynamic session data when available
-  //   },
-  // };
+  const session = IsSession;
+  const isEditor = IsEditor;
 
   // Check if user is logged in
   if (!session) {
@@ -46,23 +43,15 @@ export function Navbar() {
               Blog
             </Link>
             <Button variant="outline" size="sm">
-              <Link href="#">Sign In</Link>
+              <Link href="/sign-in">Sign In</Link>
             </Button>
             <Button variant="default" size="sm">
-              <Link href="#">Sign Up</Link>
+              <Link href="/sign-up">Sign Up</Link>
             </Button>
           </div>
         </nav>
       </header>
     );
-  }
-
-  // Check user role
-  let isEditor: boolean = false;
-  if (session) {
-    const session: { user: { role: string } } = { user: { role: "READER" } }; // Simulating session data for demonstration
-    const isAdmin = session?.user?.role === "ADMIN";
-    isEditor = session?.user?.role === "EDITOR" || isAdmin;
   }
 
   // Define navigation items based on user role
