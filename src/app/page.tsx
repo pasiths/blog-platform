@@ -33,7 +33,7 @@ export default function Home() {
     setTimeout(() => {
       setPosts(samplePosts.slice(0, 8)); // set sample data with a limit of 8 posts after 2 sec
       setLoading(false);
-    }, 20000);
+    }, 2000);
   }, []);
 
   return (
@@ -52,7 +52,7 @@ export default function Home() {
 
               <div className="flex flex-wrap gap-4">
                 <Button size="lg" asChild>
-                  <Link href="#" className="flex items-center ">
+                  <Link href="/blog" className="flex items-center ">
                     Explore Posts
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
@@ -61,7 +61,7 @@ export default function Home() {
                   <>
                     {isEditor ? (
                       <Button size="lg" asChild>
-                        <Link href="#" className="flex items-center ">
+                        <Link href="/blog/create" className="flex items-center ">
                           <Edit3 className="mr-2 h-4 w-4" />
                           Create Post
                         </Link>
@@ -150,7 +150,7 @@ export default function Home() {
           <div className="flex items-center justify-between mb-12">
             <h2 className="text-3xl font-bold tracking-tight">Latest Posts</h2>
             <Button asChild variant="outline">
-              <Link href="#">
+              <Link href="/blog">
                 View all <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
@@ -166,7 +166,7 @@ export default function Home() {
 
               {isEditor ? (
                 <Button size="lg" className="mt-4" asChild>
-                  <Link href="#" className="flex items-center ">
+                  <Link href="/blog/create" className="flex items-center ">
                     <Edit3 className="mr-2 h-4 w-4" />
                     Create Post
                   </Link>
@@ -193,7 +193,7 @@ export default function Home() {
                 <>
                   {isEditor ? (
                     <Button size="lg" asChild>
-                      <Link href="#" className="flex items-center ">
+                      <Link href="/blog/create" className="flex items-center ">
                         <Edit3 className="mr-2 h-4 w-4" />
                         Create Post
                       </Link>

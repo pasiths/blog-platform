@@ -63,7 +63,7 @@ const BlogsPage = () => {
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Blog Posts</h1>
         <Button asChild>
-          <Link href="#">
+          <Link href="/blog/create">
             <Edit3 className="mr-2 h-4 w-4" />
             Create Post
           </Link>
@@ -124,7 +124,7 @@ const BlogsPage = () => {
 
           {isEditor && (
             <Button size="lg" className="mt-4" asChild>
-              <Link href="#" className="flex items-center ">
+              <Link href="/blog/create" className="flex items-center ">
                 <Edit3 className="mr-2 h-4 w-4" />
                 Create Post
               </Link>

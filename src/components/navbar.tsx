@@ -37,7 +37,7 @@ export function Navbar() {
           </div>
           <div className="flex items-center gap-4">
             <Link
-              href="#"
+              href="/blog"
               className="text-sm font-medium transition-colors hover:text-primary text-muted-foreground"
             >
               Blog
@@ -58,14 +58,14 @@ export function Navbar() {
   const navigation = [
     {
       name: "Blog",
-      href: "#",
+      href: "/blog",
       icon: <Newspaper size={18} />,
     },
     ...(isEditor
       ? [
           {
             name: "Create Post",
-            href: "#",
+            href: "/blog/create",
             icon: <PenLine size={18} />,
           },
         ]
