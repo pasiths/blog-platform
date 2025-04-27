@@ -19,13 +19,25 @@ interface Post {
   id: number;
   title: string;
   description: string;
-  image?: string;
-  category: string;
-  tags: string[];
   content: string;
+  image: string;
+  status: string;
   createdAt: string;
   updatedAt: string;
-  authorId: number;
+  author: {
+    name: string;
+    
+  };
+  comments: [];
+  like: [];
+  tag: {
+    id: number;
+    name: string;
+  }[];
+  Category: {
+    id: number;
+    name: string;
+  }[];
 }
 
 interface BlogsProps {
@@ -34,7 +46,6 @@ interface BlogsProps {
 }
 
 const Blogs: React.FC<BlogsProps> = ({ posts, loading }) => {
-
   if (loading) {
     return (
       <div className="px-4 py-6">
@@ -95,6 +106,9 @@ const Blogs: React.FC<BlogsProps> = ({ posts, loading }) => {
                   <CardDescription className="min-h-10 max-h-10 overflow-hidden break-words line-clamp-2">
                     {post.description}
                   </CardDescription>
+                  <CardDescription className="text-xs text-gray-400">
+                    {post.author.name}
+                  </CardDescription>
                 </CardHeader>
 
                 <CardContent>
@@ -107,22 +121,23 @@ const Blogs: React.FC<BlogsProps> = ({ posts, loading }) => {
                       className="rounded-md mb-4 w-full h-40 object-cover"
                     />
                   )}
-                  <div className="text-sm text-gray-600 mb-2">
-                    Category: {post.category}
+                  <div className="text-sm text-gray-600 mb-1">
+                    Category:{" "}
+                    {post.Category.map((category) => category.name).join(", ")}
                   </div>
                   <div className="text-xs text-gray-400">
-                    Tags: {post.tags.join(", ")}
+                    Tags: {post.tag.map((tag) => tag.name).join(", ")}
                   </div>
                 </CardContent>
                 <CardFooter className="flex justify-between">
                   <div className="flex flex-col gap-1 items-start">
                     <div className="flex items-center justify-between gap-3">
                       <span className="flex items-center text-sm">
-                        10
+                        {post.like.length}
                         <Heart className="ml-1 size-3.5" />
                       </span>
                       <span className="flex items-center text-sm ">
-                        10
+                        {post.comments.length}
                         <MessageCircle className="ml-1 size-3.5" />
                       </span>
                     </div>
