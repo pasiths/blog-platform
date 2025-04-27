@@ -61,7 +61,10 @@ export default function Home() {
                   <>
                     {isEditor ? (
                       <Button size="lg" asChild>
-                        <Link href="/blog/create" className="flex items-center ">
+                        <Link
+                          href="/blog/create"
+                          className="flex items-center "
+                        >
                           <Edit3 className="mr-2 h-4 w-4" />
                           Create Post
                         </Link>
@@ -156,26 +159,7 @@ export default function Home() {
             </Button>
           </div>
 
-          {posts.length > 0 ? (
-            <Blogs posts={posts} loading={loading} />
-          ) : (
-            <div className="text-center py-12 bg-card rounded-lg">
-              <p className="text-muted-foreground">
-                No posts yet. Be the first to create one!
-              </p>
-
-              {isEditor ? (
-                <Button size="lg" className="mt-4" asChild>
-                  <Link href="/blog/create" className="flex items-center ">
-                    <Edit3 className="mr-2 h-4 w-4" />
-                    Create Post
-                  </Link>
-                </Button>
-              ) : (
-                ""
-              )}
-            </div>
-          )}
+          <Blogs posts={posts} loading={loading} />
         </div>
       </section>
 
