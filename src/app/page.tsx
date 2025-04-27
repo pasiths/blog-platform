@@ -1,14 +1,40 @@
 "use client";
 
+import Blogs from "@/components/blog/blogs";
 import { Button } from "@/components/ui/button";
 import { IsEditor, IsSession } from "@/lib/utils";
 import { ArrowRight, Edit3, Heart, PenLine, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { samplePosts } from "@/lib/samplePosts"; // Adjust the import path as necessary
+
+interface Post {
+  id: number;
+  title: string;
+  description: string;
+  image?: string;
+  category: string;
+  tags: string[];
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+  authorId: number;
+}
 
 export default function Home() {
   const session = IsSession;
   const isEditor = IsEditor; // Simulating no editor role for demonstration
+
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setPosts(samplePosts.slice(0, 8)); // set sample data with a limit of 8 posts after 2 sec
+      setLoading(false);
+    }, 20000);
+  }, []);
 
   return (
     <main>
@@ -130,17 +156,26 @@ export default function Home() {
             </Button>
           </div>
 
-          <div className="text-center py-12 bg-card rounded-lg">
-            <p className="text-muted-foreground">
-              No posts yet. Be the first to create one!
-            </p>
+          {posts.length > 0 ? (
+            <Blogs posts={posts} loading={loading} />
+          ) : (
+            <div className="text-center py-12 bg-card rounded-lg">
+              <p className="text-muted-foreground">
+                No posts yet. Be the first to create one!
+              </p>
 
-            {isEditor ?? (
-              <Button asChild className="mt-4">
-                <Link href="#">Create Post</Link>
-              </Button>
-            )}
-          </div>
+              {isEditor ? (
+                <Button size="lg" className="mt-4" asChild>
+                  <Link href="#" className="flex items-center ">
+                    <Edit3 className="mr-2 h-4 w-4" />
+                    Create Post
+                  </Link>
+                </Button>
+              ) : (
+                ""
+              )}
+            </div>
+          )}
         </div>
       </section>
 
