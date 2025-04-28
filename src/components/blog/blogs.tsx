@@ -18,6 +18,7 @@ import { IsEditor } from "@/lib/utils";
 interface Post {
   id: number;
   title: string;
+  slug: string;
   description: string;
   content: string;
   image: string;
@@ -26,7 +27,6 @@ interface Post {
   updatedAt: string;
   author: {
     name: string;
-    
   };
   comments: [];
   like: [];
@@ -145,7 +145,14 @@ const Blogs: React.FC<BlogsProps> = ({ posts, loading }) => {
                       {new Date(post.createdAt).toLocaleDateString()}
                     </span>
                   </div>
-                  <Button>Read More</Button>
+                  <Button>
+                    <Link
+                      href={`/blog/${post.slug}`}
+                      className="flex items-center gap-2"
+                    >
+                      Read Me
+                    </Link>
+                  </Button>
                 </CardFooter>
               </Card>
             ))}
