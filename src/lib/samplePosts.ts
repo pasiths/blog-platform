@@ -5,6 +5,7 @@ export const samplePosts = [
   {
     id: 1,
     title: "Exploring the Future of AI",
+    slug: "exploring-the-future-of-ai",
     description:
       "A deep dive into the advancements and implications of artificial intelligence.",
     content:
@@ -109,6 +110,7 @@ export const samplePosts = [
   {
     id: 2,
     title: "Exploring the Future of AI",
+    slug: "exploring-the-future-of-ai",
     description:
       "A deep dive into the advancements and implications of artificial intelligence.",
     content:
@@ -213,6 +215,7 @@ export const samplePosts = [
   {
     id: 3,
     title: "Exploring the Future of AI",
+    slug: "exploring-the-future-of-ai",
     description:
       "A deep dive into the advancements and implications of artificial intelligence.",
     content:
@@ -317,6 +320,7 @@ export const samplePosts = [
   {
     id: 4,
     title: "Exploring the Future of AI",
+    slug: "exploring-the-future-of-ai",
     description:
       "A deep dive into the advancements and implications of artificial intelligence.",
     content:
@@ -421,6 +425,7 @@ export const samplePosts = [
   {
     id: 5,
     title: "Exploring the Future of AI",
+    slug: "exploring-the-future-of-ai",
     description:
       "A deep dive into the advancements and implications of artificial intelligence.",
     content:
@@ -525,6 +530,7 @@ export const samplePosts = [
   {
     id: 6,
     title: "Exploring the Future of AI",
+    slug: "exploring-the-future-of-ai",
     description:
       "A deep dive into the advancements and implications of artificial intelligence.",
     content:
@@ -629,6 +635,7 @@ export const samplePosts = [
   {
     id: 7,
     title: "Exploring the Future of AI",
+    slug: "exploring-the-future-of-ai",
     description:
       "A deep dive into the advancements and implications of artificial intelligence.",
     content:
@@ -733,6 +740,7 @@ export const samplePosts = [
   {
     id: 8,
     title: "Exploring the Future of AI",
+    slug: "exploring-the-future-of-ai",
     description:
       "A deep dive into the advancements and implications of artificial intelligence.",
     content:
@@ -837,6 +845,7 @@ export const samplePosts = [
   {
     id: 9,
     title: "Exploring the Future of AI",
+    slug: "exploring-the-future-of-ai",
     description:
       "A deep dive into the advancements and implications of artificial intelligence.",
     content:
@@ -941,6 +950,7 @@ export const samplePosts = [
   {
     id: 10,
     title: "Exploring the Future of AI",
+    slug: "exploring-the-future-of-ai",
     description:
       "A deep dive into the advancements and implications of artificial intelligence.",
     content:
@@ -1045,6 +1055,7 @@ export const samplePosts = [
   {
     id: 11,
     title: "Exploring the Future of AI",
+    slug: "exploring-the-future-of-ai",
     description:
       "A deep dive into the advancements and implications of artificial intelligence.",
     content:
@@ -1149,6 +1160,7 @@ export const samplePosts = [
   {
     id: 12,
     title: "Exploring the Future of AI",
+    slug: "exploring-the-future-of-ai",
     description:
       "A deep dive into the advancements and implications of artificial intelligence.",
     content:

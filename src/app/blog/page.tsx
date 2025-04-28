@@ -18,15 +18,28 @@ import Blogs from "@/components/blog/blogs";
 interface Post {
   id: number;
   title: string;
+  slug: string;
   description: string;
-  image?: string;
-  category: string;
-  tags: string[];
   content: string;
+  image: string;
+  status: string;
   createdAt: string;
   updatedAt: string;
-  authorId: number;
+  author: {
+    name: string;
+  };
+  comments: [];
+  like: [];
+  tag: {
+    id: number;
+    name: string;
+  }[];
+  Category: {
+    id: number;
+    name: string;
+  }[];
 }
+
 
 const POSTS_PER_PAGE = 8;
 
