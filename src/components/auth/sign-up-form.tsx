@@ -77,6 +77,14 @@ const SignUpForm = () => {
     }
   };
 
+  const handleProvider = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    value: "github" | "google"
+  ) => {
+    event.preventDefault();
+    signIn(value, { callbackUrl: "/" });
+  };
+
   return (
     <div className="w-full flex flex-col gap-6 items-center">
       <form onSubmit={handleSubmit}>
@@ -176,11 +184,19 @@ const SignUpForm = () => {
         </div>
       </div>
       <div className="flex gap-4 justify-center">
-        <Button variant="outline" disabled={isLoading}>
+        <Button
+          variant="outline"
+          disabled={isLoading}
+          onClick={(e) => handleProvider(e, "github")}
+        >
           <FaGithub className="mr-2 h-4 w-4" />
           GitHub
         </Button>
-        <Button variant="outline" disabled={isLoading}>
+        <Button
+          variant="outline"
+          disabled={isLoading}
+          onClick={(e) => handleProvider(e, "google")}
+        >
           <FcGoogle className="mr-2 h-4 w-4" />
           Google
         </Button>
