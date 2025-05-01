@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Label } from "@radix-ui/react-label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -10,9 +9,9 @@ import { Separator } from "../ui/separator";
 import { Alert, AlertDescription } from "../ui/alert";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
+import { signIn } from "next-auth/react"
 
 const SignUpForm = () => {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -63,7 +62,13 @@ const SignUpForm = () => {
       }
 
       setSuccess(data.message);
-      router.push("/")
+      setTimeout(async () => {
+        await signIn("credentials", {
+          email,
+          password,
+          callbackUrl: "/",
+        })
+      }, 2000)
     } catch (error) {
       console.error("Error creating account:", error);
       setError("Something went wrong. Please try again.");
