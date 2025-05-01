@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import NextAuth from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
@@ -59,8 +60,15 @@ export const authOptions = {
       profile,
     }: {
       account: { provider?: string } | null;
-      profile?: { email?: string; name?: string; login?: string; picture?: string } | null;
+      profile?: {
+        email?: string;
+        name?: string;
+        login?: string;
+        picture?: string;
+        avatar_url?: string;
+      } | null;
     }) {
+      const imageUrl: any = profile?.picture || profile?.avatar_url;
       if (account?.provider === "github" || account?.provider === "google") {
         const existingUser = await prisma.user.findUnique({
           where: {
@@ -71,16 +79,17 @@ export const authOptions = {
           await prisma.user.create({
             data: {
               full_name: profile?.name as string,
-              username: profile?.login as string,
+              username:
+                (profile?.login as string) ||
+                (profile?.email?.split("@")[0] as string),
               email: profile?.email as string,
-              image: profile?.picture as string,
+              image: imageUrl,
             },
           });
         }
       }
       return true;
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async jwt({ token, user }: { token: any; user: any }) {
       if (user) {
         token.id = user.id;
@@ -92,7 +101,6 @@ export const authOptions = {
       return token;
     },
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async session({ session, token }: { session: any; token: any }) {
       if (token) {
         session.user = {
