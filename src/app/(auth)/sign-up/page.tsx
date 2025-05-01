@@ -2,7 +2,7 @@ import SignUpForm from "@/components/auth/sign-up-form";
 
 const SignUp = () => {
   return (
-    <div className="container mx-auto px-4 w-screen h-[87vh] flex items-center justify-center">
+    <div className="container mx-auto px-4 w-screen min-h-[calc(100vh-8rem)] flex items-center justify-center">
       <div className="mx-auto flex w-full flex-col justify-center space-y-6">
         <div className="flex flex-col space-y-2 text-center">
           <h1 className="text-2xl font-semibold tracking-tight">

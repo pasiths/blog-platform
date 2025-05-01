@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Label } from "@radix-ui/react-label";
+import { signIn } from "next-auth/react";
+import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import { Alert, AlertDescription } from "../ui/alert";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
-import { signIn } from "next-auth/react"
 
 const SignUpForm = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -67,8 +67,8 @@ const SignUpForm = () => {
           email,
           password,
           callbackUrl: "/",
-        })
-      }, 2000)
+        });
+      }, 2000);
     } catch (error) {
       console.error("Error creating account:", error);
       setError("Something went wrong. Please try again.");
