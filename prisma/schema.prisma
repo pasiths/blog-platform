@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  Post      Post[]   @relation("PostCategories")
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  postId    Int
+  userId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  Post      Post     @relation(fields: [postId], references: [id])
+  User      User     @relation(fields: [userId], references: [id])
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  postId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  Post      Post     @relation(fields: [postId], references: [id])
+  User      User     @relation(fields: [userId], references: [id])
+}
+
+model Post {
+  id          Int        @id @default(autoincrement())
+  title       String
+  slug        String     @unique
+  description String
+  content     String
+  image       String
+  status      PostStatus
+  authorId    Int
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime
+  Comment     Comment[]
+  Like        Like[]
+  User        User       @relation(fields: [authorId], references: [id])
+  Saved       Saved[]
+  Category    Category[] @relation("PostCategories")
+  Tag         Tag[]      @relation("PostTags")
+}
+
+model Saved {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  postId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  Post      Post     @relation(fields: [postId], references: [id])
+  User      User     @relation(fields: [userId], references: [id])
+}
+
+model Tag {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  creteAt   DateTime @default(now())
+  updatedAt DateTime
+  Post      Post[]   @relation("PostTags")
+}
+
+model User {
+  id            Int       @id @default(autoincrement())
+  full_name     String
+  username      String    @unique
+  email         String    @unique
+  password      String?
+  image         String?
+  bio           String?
+  website       String?
+  location      String?
+  role          UserRole
+  requestWriter Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime
+  Comment       Comment[]
+  Like          Like[]
+  Post          Post[]
+  Saved         Saved[]
+}
+
+enum PostStatus {
+  APPROVE
+  REJECT
+  PENDING
+  DELETE
+}
+
+enum UserRole {
+  ADMIN
+  EDITOR
+  READER
+}
