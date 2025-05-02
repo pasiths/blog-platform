@@ -1,53 +1,14 @@
-"use client";
-
-import Blogs from "@/components/blog/blogs";
 import { Button } from "@/components/ui/button";
-import { IsEditor, IsSession } from "@/lib/utils";
 import { ArrowRight, Edit3, Heart, PenLine, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { samplePosts } from "@/lib/samplePosts"; // Adjust the import path as necessary
+import { getCurrentUser } from "@/server/auth/session";
+import { isAuthor } from "@/server/auth/role-checker";
+import HomeBlogs from "@/components/home-blogs";
 
-interface Post {
-  id: number;
-  title: string;
-  slug: string;
-  description: string;
-  content: string;
-  image: string;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-  author: {
-    name: string;
-  };
-  comments: [];
-  like: [];
-  tag: {
-    id: number;
-    name: string;
-  }[];
-  Category: {
-    id: number;
-    name: string;
-  }[];
-}
-
-
-export default function Home() {
-  const session = IsSession;
-  const isEditor = IsEditor; // Simulating no editor role for demonstration
-
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setPosts(samplePosts.slice(0, 8)); // set sample data with a limit of 8 posts after 2 sec
-      setLoading(false);
-    }, 2000);
-  }, []);
+export default async function Home() {
+  const user = await getCurrentUser();
+  const isEditor = isAuthor(user);
 
   return (
     <main>
@@ -70,7 +31,7 @@ export default function Home() {
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
-                {session ? (
+                {user ? (
                   <>
                     {isEditor ? (
                       <Button size="lg" asChild>
@@ -172,7 +133,7 @@ export default function Home() {
             </Button>
           </div>
 
-          <Blogs posts={posts} loading={loading} />
+          <HomeBlogs />
         </div>
       </section>
 
@@ -186,7 +147,7 @@ export default function Home() {
               Join our community of writers and readers today.
             </p>
             <div className="mt-8">
-              {session ? (
+              {user ? (
                 <>
                   {isEditor ? (
                     <Button size="lg" asChild>
