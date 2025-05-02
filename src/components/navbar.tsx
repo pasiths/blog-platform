@@ -1,32 +1,16 @@
-"use client";
-
 import Link from "next/link";
-import {
-  User,
-  LogOut,
-  Settings,
-  Newspaper,
-  PenLine,
-  Bookmark,
-} from "lucide-react";
-
+import { Newspaper, PenLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { IsEditor, IsSession } from "@/lib/utils";
+import { isAuthor } from "@/server/auth/role-checker";
+import { getCurrentUser } from "@/server/auth/session";
+import { UserNav } from "./user-nav";
 
-export function Navbar() {
-  const session = IsSession;
-  const isEditor = IsEditor;
+export async function Navbar() {
+  const user = await getCurrentUser();
+  const isEditor = isAuthor(user);
 
   // Check if user is logged in
-  if (!session) {
+  if (!user) {
     return (
       <header className="border-b bg-background">
         <nav className="container mx-auto flex items-center justify-between p-4">
@@ -97,62 +81,15 @@ export function Navbar() {
               {item.name}
             </Link>
           ))}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="relative h-8 w-8 rounded-full "
-              >
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={undefined} alt={"User"} />
-                  <AvatarFallback>U</AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <div className="flex items-center justify-start gap-2 p-2">
-                <div className="flex flex-col space-y-1 leading-none">
-                  <p className="font-medium">User</p>
-                  <p className="w-[200px] truncate text-sm text-muted-foreground">
-                    user@example.com
-                  </p>
-                </div>
-              </div>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="cursor-pointer flex items-center"
-                asChild
-              >
-                <Link href="#">
-                  <User className="mr-1 h-4 w-4" />
-                  Profile
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="cursor-pointer flex items-center"
-                asChild
-              >
-                <Link href="#">
-                  <Bookmark className="mr-1 h-4 w-4" />
-                  Saved Posts
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="cursor-pointer flex items-center"
-                asChild
-              >
-                <Link href="#">
-                  <Settings className="mr-1 h-4 w-4" />
-                  Setting
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer" onSelect={() => {}}>
-                <LogOut className="mr-2 h-4 w-4" />
-                Sign out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <UserNav
+            user={{
+              id: user.id ,
+              name: user.full_name, // Map full_name to name
+              email: user.email,
+              image: user.image,
+              role: user.role,
+            }}
+          />
         </div>
       </nav>
     </header>
