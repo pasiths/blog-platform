@@ -73,12 +73,12 @@ const BlogsPage = () => {
     <main className="container mx-auto px-4 py-4 min-h-[calc(100vh-8rem)]">
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Blog Posts</h1>
-        <Button asChild>
+        {/* <Button asChild>
           <Link href="/blog/create">
             <Edit3 className="mr-2 h-4 w-4" />
             Create Post
           </Link>
-        </Button>
+        </Button> */}
       </div>
 
       <Blogs posts={paginatedPosts} loading={loading} />
