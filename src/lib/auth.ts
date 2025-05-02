@@ -100,8 +100,6 @@ export const authOptions: NextAuthOptions = {
     },
 
     async session({ token, session }) {
-      console.log("Session1", session);
-      console.log("token1", token);
 
       if (token) {
         session.user.id = token.id as string;
@@ -111,14 +109,11 @@ export const authOptions: NextAuthOptions = {
         session.user.image = token.image as string;
         session.user.role = token.role as string;
       }
-      console.log("Session2", session);
-      console.log("token2", token);
       return session;
     },
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async jwt({ token, user }) {
-      console.log("JWT2 t", token);
-      console.log("JWT2 u", user);
 
       const dbUser = await prisma.user.findUnique({
         where: {
@@ -134,8 +129,6 @@ export const authOptions: NextAuthOptions = {
         token.image = dbUser.image;
         token.role = dbUser.role;
       }
-      console.log("JWT3 t", token);
-      console.log("JWT3 u", user);
 
       return token;
     },
