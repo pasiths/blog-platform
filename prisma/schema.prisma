@@ -16,14 +16,15 @@ model Category {
 }
 
 model Comment {
-  id        Int      @id @default(autoincrement())
-  content   String
-  postId    Int
-  userId    Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Post      Post     @relation(fields: [postId], references: [id])
-  User      User     @relation(fields: [userId], references: [id])
+  id            Int           @id @default(autoincrement())
+  content       String
+  postId        Int
+  userId        Int
+  commentStatus CommentStatus @default(APPROVE)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  Post          Post          @relation(fields: [postId], references: [id])
+  User          User          @relation(fields: [userId], references: [id])
 }
 
 model Like {
@@ -104,4 +105,9 @@ enum UserRole {
   ADMIN
   EDITOR
   READER
+}
+
+enum CommentStatus {
+  APPROVE
+  DELETE
 }
