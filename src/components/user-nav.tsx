@@ -11,7 +11,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { signOut } from "next-auth/react"
+import { signOut } from "next-auth/react";
+import { UserRole } from "@prisma/client";
 
 interface UserNavProps {
   user: {
@@ -55,12 +56,17 @@ export function UserNav({ user }: UserNavProps) {
             Profile
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer flex items-center" asChild>
-          <Link href="/blog/myposts">
-            <Edit3 className="mr-1 h-4 w-4" />
-            My Posts
-          </Link>
-        </DropdownMenuItem>
+        {(user?.role === UserRole.EDITOR || user?.role === UserRole.ADMIN) && (
+          <DropdownMenuItem
+            className="cursor-pointer flex items-center"
+            asChild
+          >
+            <Link href="/blog/myposts">
+              <Edit3 className="mr-1 h-4 w-4" />
+              My Posts
+            </Link>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem className="cursor-pointer flex items-center" asChild>
           <Link href="/blog/savedposts">
             <Bookmark className="mr-1 h-4 w-4" />
@@ -74,7 +80,10 @@ export function UserNav({ user }: UserNavProps) {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer" onClick={() => signOut({callbackUrl: '/'})}>
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={() => signOut({ callbackUrl: "/" })}
+        >
           <LogOut className="mr-2 h-4 w-4" />
           Sign out
         </DropdownMenuItem>
