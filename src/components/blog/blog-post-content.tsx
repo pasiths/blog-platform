@@ -39,9 +39,9 @@ interface Post {
     id: number;
     content: string;
     createdAt: string;
-    author: {
+    User: {
       id: number;
-      name: string;
+      full_name: string;
       image: string;
     };
   }[];
@@ -252,6 +252,27 @@ export function BlogPostContent({
       }
     } catch (error) {
       console.error("Error saving the post:", error);
+    }
+  };
+
+  const handleCommentDelete = async (id: number) => {
+    try {
+      const res = await fetch("/api/blogs/comments", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id,
+        }),
+      });
+      if (!res.ok) {
+        return;
+      }
+
+      window.location.reload();
+    } catch (error) {
+      console.error("Error creating comment:", error);
     }
   };
 
@@ -481,15 +502,15 @@ export function BlogPostContent({
                         <div className="flex items-center gap-2 ">
                           <Avatar className="h-6 w-6">
                             <AvatarImage
-                              src={comment.author.image}
-                              alt={comment.author.name}
+                              src={comment.User.image}
+                              alt={comment.User.full_name}
                             />
                             <AvatarFallback>
-                              {comment.author.name.charAt(0)}
+                              {comment.User.full_name.charAt(0)}
                             </AvatarFallback>
                           </Avatar>
                           <span className="font-medium">
-                            {comment.author.name}
+                            {comment.User.full_name}
                           </span>
                           <span className="text-sm text-muted-foreground">
                             {formatDistanceToNow(new Date(comment.createdAt), {
@@ -498,8 +519,14 @@ export function BlogPostContent({
                           </span>
                         </div>
 
-                        {isEditor && (
-                          <Button variant="destructive" size="sm" type="submit">
+                        {comment.User.id === user?.id && (
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            type="submit"
+                            onClick={() => handleCommentDelete(comment.id)}
+                            className="cursor-pointer"
+                          >
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         )}
