@@ -61,14 +61,14 @@ export function UserNav({ user }: UserNavProps) {
             className="cursor-pointer flex items-center"
             asChild
           >
-            <Link href="/blog/myposts">
+            <Link href="/blog/myblogs">
               <Edit3 className="mr-1 h-4 w-4" />
               My Posts
             </Link>
           </DropdownMenuItem>
         )}
         <DropdownMenuItem className="cursor-pointer flex items-center" asChild>
-          <Link href="/blog/savedposts">
+          <Link href="/blog/savedblogs">
             <Bookmark className="mr-1 h-4 w-4" />
             Saved Posts
           </Link>
