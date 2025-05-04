@@ -20,7 +20,6 @@ model Comment {
   content       String
   postId        Int
   userId        Int
-  commentStatus CommentStatus @default(APPROVE)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   Post          Post          @relation(fields: [postId], references: [id])
@@ -105,9 +104,4 @@ enum UserRole {
   ADMIN
   EDITOR
   READER
-}
-
-enum CommentStatus {
-  APPROVE
-  DELETE
 }
