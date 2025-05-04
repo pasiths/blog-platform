@@ -5,9 +5,9 @@ const CreateBlog = () => {
     <main className="container mx-auto px-4 py-12 min-h-[calc(100vh-8rem)]">
       <div className="mx-auto max-w-3xl">
         <h1 className="text-3xl font-bold tracking-tight mb-8">
-          Create New Post
+          Create New Blog
         </h1>
-        <Editor />
+        <Editor slug="" />
       </div>
     </main>
   );
