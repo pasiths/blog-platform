@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { User, LogOut, Settings, Bookmark } from "lucide-react";
+import { User, LogOut, Settings, Bookmark, Edit3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -56,7 +56,13 @@ export function UserNav({ user }: UserNavProps) {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer flex items-center" asChild>
-          <Link href="#">
+          <Link href="/blog/myposts">
+            <Edit3 className="mr-1 h-4 w-4" />
+            My Posts
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer flex items-center" asChild>
+          <Link href="/blog/savedposts">
             <Bookmark className="mr-1 h-4 w-4" />
             Saved Posts
           </Link>

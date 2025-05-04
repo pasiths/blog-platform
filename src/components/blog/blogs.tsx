@@ -44,9 +44,10 @@ interface Post {
 interface BlogsProps {
   posts: Post[];
   loading: boolean;
+  notFoundMessage: string;
 }
 
-const Blogs: React.FC<BlogsProps> = ({ posts, loading }) => {
+const Blogs: React.FC<BlogsProps> = ({ posts, loading, notFoundMessage }) => {
   if (loading) {
     return (
       <div className="px-4 py-6">
@@ -81,7 +82,7 @@ const Blogs: React.FC<BlogsProps> = ({ posts, loading }) => {
         // Show no posts message
         <div className="text-center py-12 bg-card rounded-lg">
           <p className="text-muted-foreground">
-            No posts yet. Be the first to create one!
+            {notFoundMessage}
           </p>
 
           {isEditor ? (
