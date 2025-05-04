@@ -5,10 +5,16 @@ import Link from "next/link";
 import { getCurrentUser } from "@/server/auth/session";
 import { isAuthor } from "@/server/auth/role-checker";
 import HomeBlogs from "@/components/home-blogs";
+import { PostStatus } from "@prisma/client";
 
 export default async function Home() {
   const user = await getCurrentUser();
   const isEditor = isAuthor(user);
+
+  const queryParams = new URLSearchParams({
+    postStatus: PostStatus.APPROVE,
+    take: "8",
+  }).toString();
 
   return (
     <main>
@@ -133,7 +139,7 @@ export default async function Home() {
             </Button>
           </div>
 
-          <HomeBlogs />
+          <HomeBlogs queryParams={queryParams} notFoundMessage="No posts yet. Be the first to create one!"/>
         </div>
       </section>
 

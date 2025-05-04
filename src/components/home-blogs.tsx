@@ -1,7 +1,6 @@
 "use client";
 
 import Blogs from "@/components/blog/blogs";
-import { PostStatus } from "@prisma/client";
 import { useEffect, useState } from "react";
 
 interface Post {
@@ -29,18 +28,14 @@ interface Post {
   }[];
 }
 
-export default function HomeBlogs() {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function HomeBlogs({ queryParams, notFoundMessage  }: any) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const queryParams = new URLSearchParams({
-          postStatus: PostStatus.APPROVE,
-          take: "8",
-        }).toString();
-
         const res = await fetch(`/api/blogs?${queryParams}`, {
           method: "GET",
           headers: {
@@ -60,7 +55,14 @@ export default function HomeBlogs() {
     };
 
     fetchPosts();
-  }, []);
+  }, [queryParams]);
 
-  return <Blogs posts={posts} loading={loading} />;
+  return (
+    <Blogs
+      posts={posts}
+      loading={loading}
+      // notFoundMessage="No posts yet. Be the first to create one!"
+      notFoundMessage={notFoundMessage}
+    />
+  );
 }
