@@ -1,8 +1,13 @@
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
 
+interface CommentBoxProps {
+  postId: number | undefined;
+}
 
-export function CommentBox() {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function CommentBox({ postId }: CommentBoxProps) {
+  
   return (
     <form className="space-y-4">
       <Textarea

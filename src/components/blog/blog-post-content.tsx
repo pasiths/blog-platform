@@ -2,7 +2,6 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
-import { samplePosts } from "@/lib/samplePosts"; // Adjust the import path as necessary
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -19,6 +18,7 @@ import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import { CommentBox } from "@/components/blog/comment-box";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useRouter } from "next/navigation";
 
 interface Post {
   id: number;
@@ -30,11 +30,12 @@ interface Post {
   status: string;
   createdAt: string;
   updatedAt: string;
-  author: {
-    name: string;
+  User: {
+    id: number;
+    full_name: string;
     image: string;
   };
-  comments: {
+  Comment: {
     id: number;
     content: string;
     createdAt: string;
@@ -44,8 +45,11 @@ interface Post {
       image: string;
     };
   }[];
-  like: [];
-  tag: {
+  Like: {
+    id: number;
+    userId: number;
+  }[];
+  Tag: {
     id: number;
     name: string;
   }[];
@@ -53,33 +57,203 @@ interface Post {
     id: number;
     name: string;
   }[];
-  saved: [];
+  Saved: {
+    id: number;
+    userId: number;
+  }[];
 }
 
 export function BlogPostContent({
   params,
   user,
   isAuthor,
+  isAdmin,
 }: {
   params: Promise<{ slug: string }>;
   user: any;
   isAuthor: boolean;
+  isAdmin: boolean;
 }) {
+  const router = useRouter();
   const { slug } = use(params);
 
   const isSession = user;
-  const isEditor = isAuthor; // Simulating no editor role for demonstration
 
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isLike, setIsLike] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+
+  const [isDeleted, setIsDeleted] = useState(false);
+  const [isEditor, setIsEditor] = useState(false);
+
+  const [likeCount, setLikeCount] = useState(0);
+  const [commentCount, setCommentCount] = useState(0);
+  const [savedCount, setSavedCount] = useState(0);
 
   useEffect(() => {
-    const filteredPost = samplePosts.find((post) => post.slug === slug) || null;
-    setTimeout(() => {
-      setPost(filteredPost); // set filtered data based on slug after 2 sec
-      setLoading(false);
-    }, 200);
-  }, [slug]);
+    const fetchPosts = async () => {
+      try {
+        const queryParams = new URLSearchParams({
+          slug: slug,
+        }).toString();
+
+        const res = await fetch(`/api/blogs/slug/[slug]?${queryParams}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (!res.ok) {
+          return null;
+          // throw new Error("Failed to fetch posts");
+        }
+        const data = await res.json();
+
+        setLikeCount(data.Like.length);
+        setCommentCount(data.Comment.length);
+        setSavedCount(data.Saved.length);
+
+        const isPostLiked = data.Like.some(
+          (like: { userId: number }) => like.userId === user?.id
+        );
+        setIsLike(isPostLiked);
+
+        const isPostSaved = data.Saved.some(
+          (save: { userId: number }) => save.userId === user?.id
+        );
+        setIsSaved(isPostSaved);
+        setPost(data);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const checkIfDeletedEditor = async () => {
+      const checkerDelete =
+        (post?.User?.id === user?.id || isAdmin) && isSession;
+      const checkerEditor = post?.User?.id === user?.id && isAuthor;
+      setIsDeleted(checkerDelete);
+      setIsEditor(checkerEditor);
+    };
+
+    fetchPosts();
+    checkIfDeletedEditor();
+  }, [isAdmin, isAuthor, isSession, post?.User?.id, slug, user?.id]);
+
+  const handleDelete = async () => {
+    try {
+      const queryParams = new URLSearchParams({
+        slug: slug,
+      }).toString();
+
+      const res = await fetch(`/api/blogs/slug/[slug]?${queryParams}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          slug: slug,
+        }),
+      });
+
+      if (!res.ok) {
+        console.log("Error deleting the post:", res);
+      }
+
+      router.push("/blog");
+    } catch (error) {
+      console.error("Error deleting the post:", error);
+    }
+  };
+
+  const handleLike = async () => {
+    if (!isSession) {
+      return;
+    }
+    try {
+      if (!isLike) {
+        const res = await fetch("/api/blogs/like", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            postId: post?.id,
+          }),
+        });
+
+        if (!res.ok) {
+          return null;
+        }
+        setLikeCount((prev) => prev + 1);
+        setIsLike(!isLike);
+      } else {
+        const res = await fetch("/api/blogs/like", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            postId: post?.id,
+          }),
+        });
+
+        if (!res.ok) {
+          return null;
+        }
+        setLikeCount((prev) => prev - 1);
+        setIsLike(!isLike);
+      }
+    } catch (error) {
+      console.error("Error liking the post:", error);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!isSession) {
+      return;
+    }
+    try {
+      if (!isSaved) {
+        const res = await fetch("/api/blogs/saved", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            postId: post?.id,
+          }),
+        });
+
+        if (!res.ok) {
+          return null;
+        }
+        setSavedCount((prev) => prev + 1);
+        setIsSaved(!isSaved);
+      } else {
+        const res = await fetch("/api/blogs/saved", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            postId: post?.id,
+          }),
+        });
+
+        if (!res.ok) {
+          return null;
+        }
+        setSavedCount((prev) => prev - 1);
+        setIsSaved(!isSaved);
+      }
+    } catch (error) {
+      console.error("Error saving the post:", error);
+    }
+  };
 
   if (loading) {
     return (
@@ -131,22 +305,27 @@ export function BlogPostContent({
               Back to all posts
             </Link>
           </Button>
-          {isEditor ? (
-            <div className="flex flex-row gap-2 items-center">
+          <div className="flex flex-row gap-2 items-center">
+            {isEditor && (
               <Button variant="outline" size="sm" asChild>
                 <Link href="#">
                   <Edit3 />
                   Edit
                 </Link>
               </Button>
-              <Button variant="destructive" size="sm">
+            )}
+            {isDeleted && (
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleDelete}
+                className="cursor-pointer"
+              >
                 <Trash2 />
                 Delete
               </Button>
-            </div>
-          ) : (
-            ""
-          )}
+            )}
+          </div>
         </div>
 
         <Separator className="mb-8" />
@@ -168,15 +347,15 @@ export function BlogPostContent({
                 <div className="flex items-center gap-4">
                   <Avatar>
                     <AvatarImage
-                      src={post?.author.image}
-                      alt={post?.author.name}
+                      src={post?.User.image}
+                      alt={post?.User.full_name}
                     />
                     <AvatarFallback>
-                      {post?.author.name.charAt(0)}
+                      {post?.User.full_name.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
                   <div className="">
-                    <p className="font-medium">{post?.author.name}</p>
+                    <p className="font-medium">{post?.User.full_name}</p>
                     <p className="text-sm text-muted-foreground">
                       Published{": "}
                       {post?.createdAt
@@ -229,7 +408,7 @@ export function BlogPostContent({
                 </p>
                 <p className="font-medium felx items-center wrap-break-word">
                   Tags:{" "}
-                  {post?.tag.map((tag) => (
+                  {post?.Tag.map((tag) => (
                     <span
                       key={tag.id}
                       className="text-[0.9375rem] text-muted-foreground mb-4"
@@ -242,25 +421,33 @@ export function BlogPostContent({
 
               <div className="flex flex-row items-center justify-between">
                 <div className="flex flex-row gap-1 items-center">
-                  <p className="text-lg flex flex-row justify-center items-center min-w-[50px] cursor-pointer">
-                    <span className="text-muted-foreground mr-1">
-                      {post?.like.length || 0}
-                    </span>
-                    <Heart className="h-4 w-4" />
+                  <p
+                    className="text-lg font-bold flex flex-row justify-center items-center min-w-[50px] cursor-pointer"
+                    onClick={handleLike}
+                  >
+                    <span className="mr-1">{likeCount || 0}</span>
+                    <Heart
+                      className="h-5 w-5"
+                      color={isLike ? "red" : "currentColor"}
+                      fill={isLike ? "red" : "none"}
+                    />
                   </p>
-                  <p className="text-lg flex flex-row justify-center items-center min-w-[50px] cursor-pointer">
-                    <span className="text-muted-foreground mr-1">
-                      {post?.comments.length || 0}
-                    </span>
-                    <MessageCircle className="h-4 w-4" />
+                  <p className="text-lg font-bold flex flex-row justify-center items-center min-w-[50px] cursor-pointer">
+                    <span className="mr-1">{commentCount || 0}</span>
+                    <MessageCircle className="h-5 w-5" />
                   </p>
                 </div>
 
-                <p className="text-lg flex flex-row justify-center items-center min-w-[50px] cursor-pointer">
-                  <span className="text-muted-foreground mr-1">
-                    {post?.saved.length || 0}
-                  </span>
-                  <Bookmark className="h-4 w-4" />
+                <p
+                  className="text-lg font-bold flex flex-row justify-center items-center min-w-[50px] cursor-pointer"
+                  onClick={handleSave}
+                >
+                  <span className="mr-1">{savedCount || 0}</span>
+                  <Bookmark
+                    className="h-5 w-5"
+                    color={isSaved ? "black" : "currentColor"}
+                    fill={isSaved ? "black" : "none"}
+                  />
                 </p>
               </div>
             </div>
@@ -269,7 +456,7 @@ export function BlogPostContent({
               <h2 className="text-2xl font-bold tracking-tight">Comments</h2>
 
               {isSession ? (
-                <CommentBox />
+                <CommentBox postId={post?.id} />
               ) : (
                 <div className="bg-muted p-4 rounded-md">
                   <p className="text-sm font-medium">
@@ -287,8 +474,8 @@ export function BlogPostContent({
               <Separator />
 
               <div className="space-y-6">
-                {(post?.comments ?? []).length > 0 ? (
-                  post?.comments.map((comment) => (
+                {(post?.Comment ?? []).length > 0 ? (
+                  post?.Comment.map((comment) => (
                     <div key={comment.id} className="border rounded-lg p-4">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2 ">
