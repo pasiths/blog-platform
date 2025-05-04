@@ -14,6 +14,7 @@ import Image from "next/image";
 import { Edit3, Heart, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { IsEditor } from "@/lib/utils";
+import { formatDistanceToNow } from "date-fns";
 
 interface Post {
   id: number;
@@ -25,12 +26,12 @@ interface Post {
   status: string;
   createdAt: string;
   updatedAt: string;
-  author: {
-    name: string;
+  User: {
+    full_name: string;
   };
-  comments: [];
-  like: [];
-  tag: {
+  Comment: [];
+  Like: [];
+  Tag: {
     id: number;
     name: string;
   }[];
@@ -106,8 +107,15 @@ const Blogs: React.FC<BlogsProps> = ({ posts, loading }) => {
                   <CardDescription className="min-h-10 max-h-10 overflow-hidden break-words line-clamp-2">
                     {post.description}
                   </CardDescription>
-                  <CardDescription className="text-xs text-gray-400">
-                    {post.author.name}
+                  <CardDescription className="flex justify-between text-xs text-gray-400">
+                    <span>{post.User.full_name}</span>
+                    <span>
+                      {post.createdAt
+                        ? formatDistanceToNow(new Date(post.createdAt), {
+                            addSuffix: true,
+                          })
+                        : ""}
+                    </span>
                   </CardDescription>
                 </CardHeader>
 
@@ -121,29 +129,27 @@ const Blogs: React.FC<BlogsProps> = ({ posts, loading }) => {
                       className="rounded-md mb-4 w-full h-40 object-cover"
                     />
                   )}
-                  <div className="text-sm text-gray-600 mb-1">
+                  <div className="text-sm text-gray-600 mb-2 min-h-10 max-h-10 overflow-hidden break-words line-clamp-2">
                     Category:{" "}
                     {post.Category.map((category) => category.name).join(", ")}
                   </div>
-                  <div className="text-xs text-gray-400">
-                    Tags: {post.tag.map((tag) => tag.name).join(", ")}
+                  <div className="text-xs text-gray-400 min-h-8 max-h-8 overflow-hidden break-words line-clamp-2">
+                    Tags: {post.Tag.map((tag) => tag.name).join(", ")}
                   </div>
                 </CardContent>
                 <CardFooter className="flex justify-between">
                   <div className="flex flex-col gap-1 items-start">
                     <div className="flex items-center justify-between gap-3">
-                      <span className="flex items-center text-sm">
-                        {post.like.length}
-                        <Heart className="ml-1 size-3.5" />
+                      <span className="flex items-center text-base">
+                        {post.Like.length}
+                        <Heart className="ml-1 size-4" />
                       </span>
-                      <span className="flex items-center text-sm ">
-                        {post.comments.length}
-                        <MessageCircle className="ml-1 size-3.5" />
+                      <span className="flex items-center text-base ">
+                        {post.Comment.length}
+                        <MessageCircle className="ml-1 size-4" />
                       </span>
                     </div>
-                    <span className="text-xs text-gray-500">
-                      {new Date(post.createdAt).toLocaleDateString()}
-                    </span>
+                    
                   </div>
                   <Button>
                     <Link

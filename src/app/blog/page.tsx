@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
   Pagination,
   PaginationContent,
@@ -9,11 +8,9 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Edit3 } from "lucide-react";
-import Link from "next/link";
 import { useEffect, useState } from "react";
-import { samplePosts } from "@/lib/samplePosts"; // Adjust the import path as necessary
 import Blogs from "@/components/blog/blogs";
+import { PostStatus } from "@prisma/client";
 
 interface Post {
   id: number;
@@ -25,12 +22,12 @@ interface Post {
   status: string;
   createdAt: string;
   updatedAt: string;
-  author: {
-    name: string;
+  User: {
+    full_name: string;
   };
-  comments: [];
-  like: [];
-  tag: {
+  Comment: [];
+  Like: [];
+  Tag: {
     id: number;
     name: string;
   }[];
@@ -52,10 +49,31 @@ const BlogsPage = () => {
   const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
 
   useEffect(() => {
-    setTimeout(() => {
-      setPosts(samplePosts); // set sample data after 2 sec
-      setLoading(false);
-    }, 2000);
+    const fetchPosts = async () => {
+      try {
+        const queryParams = new URLSearchParams({
+          postStatus: PostStatus.APPROVE,
+        }).toString();
+
+        const res = await fetch(`/api/blogs?${queryParams}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (!res.ok) {
+          throw new Error("Failed to fetch posts");
+        }
+        const data = await res.json();
+        setPosts(data.blogs);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPosts();
   }, []);
 
   const paginatedPosts = posts.slice(

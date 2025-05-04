@@ -1,7 +1,7 @@
 "use client";
 
 import Blogs from "@/components/blog/blogs";
-import { samplePosts } from "@/lib/samplePosts"; // Adjust the import path as necessary
+import { PostStatus } from "@prisma/client";
 import { useEffect, useState } from "react";
 
 interface Post {
@@ -14,12 +14,12 @@ interface Post {
   status: string;
   createdAt: string;
   updatedAt: string;
-  author: {
-    name: string;
+  User: {
+    full_name: string;
   };
-  comments: [];
-  like: [];
-  tag: {
+  Comment: [];
+  Like: [];
+  Tag: {
     id: number;
     name: string;
   }[];
@@ -34,10 +34,33 @@ export default function HomeBlogs() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setTimeout(() => {
-      setPosts(samplePosts.slice(0, 8)); // set sample data with a limit of 8 posts after 2 sec
-      setLoading(false);
-    }, 2000);
+    const fetchPosts = async () => {
+      try {
+        const queryParams = new URLSearchParams({
+          postStatus: PostStatus.APPROVE,
+          take: "8",
+        }).toString();
+
+        const res = await fetch(`/api/blogs?${queryParams}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (!res.ok) {
+          throw new Error("Failed to fetch posts");
+        }
+        const data = await res.json();
+        setPosts(data.blogs);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPosts();
   }, []);
+
   return <Blogs posts={posts} loading={loading} />;
 }
