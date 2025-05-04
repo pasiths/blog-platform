@@ -82,83 +82,87 @@ export async function GET(req: NextRequest) {
       ? parseInt(searchParams.get("take")!)
       : undefined;
     const postStatus = searchParams.get("postStatus") || PostStatus.APPROVE;
+    const savePostUserId = searchParams.get("savePostUserId")
+      ? parseInt(searchParams.get("savePostUserId")!)
+      : undefined;
 
     const blogs = await prisma.post.findMany({
       where: {
-      AND: [
-        title ? { title: { contains: title, mode: "insensitive" } } : {},
-        userId ? { authorId: userId } : {},
-        userName
-        ? {
-          User: {
-            full_name: { contains: userName, mode: "insensitive" },
-          },
-          }
-        : {},
-        categoryName
-        ? {
-          Category: {
-            some: {
-            name: { contains: categoryName, mode: "insensitive" },
-            },
-          },
-          }
-        : {},
-        tagName
-        ? {
-          Tag: {
-            some: { name: { contains: tagName, mode: "insensitive" } },
-          },
-          }
-        : {},
-        postStatus ? { status: postStatus as PostStatus } : {},
-      ],
+        AND: [
+          title ? { title: { contains: title, mode: "insensitive" } } : {},
+          userId ? { authorId: userId } : {},
+          userName
+            ? {
+                User: {
+                  full_name: { contains: userName, mode: "insensitive" },
+                },
+              }
+            : {},
+          categoryName
+            ? {
+                Category: {
+                  some: {
+                    name: { contains: categoryName, mode: "insensitive" },
+                  },
+                },
+              }
+            : {},
+          tagName
+            ? {
+                Tag: {
+                  some: { name: { contains: tagName, mode: "insensitive" } },
+                },
+              }
+            : {},
+          postStatus ? { status: postStatus as PostStatus } : {},
+          savePostUserId ? { Saved: { some: { userId: savePostUserId } } } : {},
+        ],
       },
       orderBy: {
-      createdAt: "desc",
+        createdAt: "desc",
       },
       take,
       include: {
-      User: {
-        select: {
-        id: true,
-        full_name: true,
-        email: true,
-        },
-      },
-      Category: {
-        select: {
-        id: true,
-        name: true,
-        },
-      },
-      Tag: {
-        select: {
-        id: true,
-        name: true,
-        },
-      },
-      Comment: {
-        select: {
-        id: true,
-        content: true,
-        createdAt: true,
-        updatedAt: true,
         User: {
           select: {
-          id: true,
-          full_name: true,
-          email: true,
+            id: true,
+            full_name: true,
+            email: true,
           },
         },
+        Category: {
+          select: {
+            id: true,
+            name: true,
+          },
         },
-      },
-      Like: {
-        select: {
-        id: true,
-        userId: true,
+        Tag: {
+          select: {
+            id: true,
+            name: true,
+          },
         },
-      },
+        Comment: {
+          select: {
+            id: true,
+            content: true,
+            createdAt: true,
+            updatedAt: true,
+            User: {
+              select: {
+                id: true,
+                full_name: true,
+                email: true,
+              },
+            },
+          },
+        },
+        Like: {
+          select: {
+            id: true,
+            userId: true,
+          },
+        },
       },
     });
 
