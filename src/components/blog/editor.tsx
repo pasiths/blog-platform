@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TextEditor from "../editor/text-editor";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -9,8 +9,15 @@ import { Textarea } from "../ui/textarea";
 import Image from "next/image";
 import { AspectRatio } from "../ui/aspect-ratio";
 import { Alert, AlertDescription } from "../ui/alert";
+import { useRouter } from "next/navigation";
+import { Skeleton } from "../ui/skeleton";
 
-const Editor = () => {
+type EditorProps = { slug: string };
+
+const Editor: React.FC<EditorProps> = ({ slug }) => {
+  const router = useRouter();
+
+  const [isScreenLoading, setIsScreenLoading] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -24,9 +31,107 @@ const Editor = () => {
   const [imagePreview, setImagePreview] = useState<string>("");
   const [imageUrl, setImageUrl] = useState<string>("");
 
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        setIsScreenLoading(true);
+        const queryParams = new URLSearchParams({
+          slug: slug,
+        }).toString();
+
+        const res = await fetch(`/api/blogs/slug/[slug]?${queryParams}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (!res.ok) {
+          return null;
+          // throw new Error("Failed to fetch posts");
+        }
+        const data = await res.json();
+
+        setTitle(data.title || "");
+        setDescription(data.description || "");
+        setContent(data.content || "");
+        setImageUrl(data.image || "");
+        setImagePreview(data.image || "");
+
+        setCategories(
+          data.Category.map((category: { name: string }) => category.name).join(
+            ", "
+          ) || ""
+        );
+
+        setTags(
+          data.Tag.map((tag: { name: string }) => tag.name).join(", ") || ""
+        );
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      } finally {
+        setIsScreenLoading(false);
+      }
+    };
+
+    if (slug) {
+      fetchPosts();
+    } else {
+      setTimeout(() => {
+        setIsScreenLoading(false);
+      }, 1000);
+    }
+  }, [slug]);
+
+  if (isScreenLoading) {
+    return (
+      <div className="space-y-8">
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-20" />
+            <Skeleton className="h-8 w-full" />
+          </div>
+
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-20" />
+
+            <Skeleton className="h-24 w-full" />
+          </div>
+
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-20" />
+
+            <Skeleton className="h-24 w-full" />
+          </div>
+
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-20" />
+
+            <Skeleton className="h-8 w-full" />
+          </div>
+
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-20" />
+
+            <Skeleton className="h-8 w-full" />
+          </div>
+
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-20" />
+
+            <Skeleton className="h-24 w-full" />
+          </div>
+
+          <div className="flex gap-4">
+            <Skeleton className="h-10 w-32" />
+            <Skeleton className="h-10 w-32" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const onChange = (content: string) => {
     setContent(content);
-    console.log(content);
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,6 +153,9 @@ const Editor = () => {
 
   // Upload image to Cloudinary
   const uploadImage = async (): Promise<string | null> => {
+    if (imagePreview === imageUrl) {
+      return imageUrl;
+    }
     if (!image) return null;
 
     const formData = new FormData();
@@ -82,21 +190,30 @@ const Editor = () => {
       return;
     }
     try {
-      const imageUrl = await uploadImage();
-      if (!imageUrl) {
+      const uploadImageUrl = await uploadImage();
+      if (!uploadImageUrl) {
         setError("Image upload failed. Please try again.");
         setIsLoading(false);
         return;
       }
-      const res = await fetch("/api/blogs", {
-        method: "POST",
+
+      let url = "/api/blogs";
+      const method = slug ? "PUT" : "POST";
+      if (slug) {
+        const queryParams = new URLSearchParams({
+          slug: slug,
+        }).toString();
+        url = `/api/blogs/slug/[slug]?${queryParams}`;
+      }
+      const res = await fetch(`${url}`, {
+        method: method,
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           title,
           description,
-          image: imageUrl,
+          image: uploadImageUrl,
           content,
           categories: categories
             ? categories.split(",").map((category) => category.trim())
@@ -127,7 +244,7 @@ const Editor = () => {
         setSuccess(null);
       }, 3000);
 
-      window.location.href = `/blog/${data.blog.slug}`;
+      router.push(`/blog/${data.blog.slug}`);
     } catch (error) {
       console.error("Error submitting form:", error);
       setError("Something went wrong. Please try again.");
@@ -276,11 +393,21 @@ const Editor = () => {
 
         <div className="flex gap-4">
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Creating..." : "Create Post"}
+            {slug
+              ? isLoading
+                ? "Updating..."
+                : "Update Blog"
+              : isLoading
+              ? "Creating..."
+              : "Create Blog"}
           </Button>
-            <Button variant="outline" disabled={isLoading} onClick={() => window.location.href = "/blog"}>
+          <Button
+            variant="outline"
+            disabled={isLoading}
+            onClick={() => (window.location.href = "/blog")}
+          >
             Cancel
-            </Button>
+          </Button>
         </div>
       </div>
     </form>

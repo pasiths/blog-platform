@@ -329,7 +329,7 @@ export function BlogPostContent({
           <div className="flex flex-row gap-2 items-center">
             {isEditor && (
               <Button variant="outline" size="sm" asChild>
-                <Link href="#">
+                <Link href={`/blog/edit/${post?.slug}`}>
                   <Edit3 />
                   Edit
                 </Link>
