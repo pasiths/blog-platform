@@ -7,7 +7,8 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const slug = searchParams.get("slug") || undefined;
-    let postStatus = (searchParams.get("postStatus") as PostStatus) || undefined;
+    let postStatus =
+      (searchParams.get("postStatus") as PostStatus) || undefined;
 
     const user = await getCurrentUser();
     if (user?.role !== UserRole.ADMIN) {
@@ -125,6 +126,65 @@ export async function DELETE(req: NextRequest) {
     console.error("Error deleting blog post:", error);
     return NextResponse.json(
       { error: "Failed to delete blog post" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const slug = searchParams.get("slug") || undefined;
+
+    if (!slug) {
+      return NextResponse.json({ error: "Slug is required" }, { status: 400 });
+    }
+    const user = await getCurrentUser();
+    if (user?.role !== UserRole.EDITOR && user?.role !== UserRole.ADMIN) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+    const { title, description, image, categories, tags, content } =
+      await req.json();
+
+    if (!title || !description || !image || !categories || !tags || !content) {
+      return NextResponse.json(
+        { message: "All fields are required" },
+        { status: 400 }
+      );
+    }
+
+    const blog = await prisma.post.update({
+      where: { slug },
+      data: {
+        title,
+        description,
+        content,
+        image,
+        authorId: user?.id,
+        Category: {
+          connectOrCreate: categories.map((category: string) => ({
+            where: { name: category },
+            create: { name: category },
+          })),
+        },
+        Tag: {
+          connectOrCreate: tags.map((tag: string) => ({
+            where: { name: tag },
+            create: { name: tag },
+          })),
+        },
+        status: PostStatus.PENDING,
+      },
+    });
+
+    return NextResponse.json(
+      { message: "Blog updated successfully", blog },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json(
+      { message: "Error updating blog" },
       { status: 500 }
     );
   }
