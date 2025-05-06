@@ -39,7 +39,7 @@ const SavedBlogsPage = async () => {
                 Approve Posts
               </h2>
               <Button asChild variant="outline">
-                <Link href="/blog/myblogs/approveblogs">
+                <Link href="/blog/yourblogs/approveblogs">
                   View all <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
@@ -59,7 +59,7 @@ const SavedBlogsPage = async () => {
                 Pending Posts
               </h2>
               <Button asChild variant="outline">
-                <Link href="/blog/myblogs/pendingblogs">
+                <Link href="/blog/yourblogs/pendingblogs">
                   View all <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>

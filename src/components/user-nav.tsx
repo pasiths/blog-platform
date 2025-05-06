@@ -51,7 +51,7 @@ export function UserNav({ user }: UserNavProps) {
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="cursor-pointer flex items-center" asChild>
-          <Link href="#">
+          <Link href={`/users/${user?.id}`}>
             <User className="mr-1 h-4 w-4" />
             Profile
           </Link>
@@ -61,9 +61,9 @@ export function UserNav({ user }: UserNavProps) {
             className="cursor-pointer flex items-center"
             asChild
           >
-            <Link href="/blog/myblogs">
+            <Link href="/blog/yourblogs">
               <Edit3 className="mr-1 h-4 w-4" />
-              My Posts
+              Your Posts
             </Link>
           </DropdownMenuItem>
         )}
