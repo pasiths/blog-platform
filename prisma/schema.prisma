@@ -16,14 +16,14 @@ model Category {
 }
 
 model Comment {
-  id            Int           @id @default(autoincrement())
-  content       String
-  postId        Int
-  userId        Int
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  Post          Post          @relation(fields: [postId], references: [id])
-  User          User          @relation(fields: [userId], references: [id])
+  id        Int      @id @default(autoincrement())
+  content   String
+  postId    Int
+  userId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Post      Post     @relation(fields: [postId], references: [id])
+  User      User     @relation(fields: [userId], references: [id])
 }
 
 model Like {
@@ -87,6 +87,11 @@ model User {
   requestWriter Boolean   @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  github        String?
+  instagram     String?
+  linkedin      String?
+  x             String?
+  youtube       String?
   Comment       Comment[]
   Like          Like[]
   Post          Post[]
