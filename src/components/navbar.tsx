@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { isAuthor } from "@/server/auth/role-checker";
 import { getCurrentUser } from "@/server/auth/session";
 import { UserNav } from "./user-nav";
+import ReqWriter from "./user/request-writer-form";
 
 export async function Navbar() {
   const user = await getCurrentUser();
@@ -38,30 +39,6 @@ export async function Navbar() {
     );
   }
 
-  // Define navigation items based on user role
-  const navigation = [
-    {
-      name: "Blog",
-      href: "/blog",
-      icon: <Newspaper size={18} />,
-    },
-    ...(isEditor
-      ? [
-          {
-            name: "Create Post",
-            href: "/blog/create",
-            icon: <PenLine size={18} />,
-          },
-        ]
-      : [
-          {
-            name: "Request Writer",
-            href: "#",
-            icon: <PenLine size={18} />,
-          },
-        ]),
-  ];
-
   return (
     <header className="border-b bg-background">
       <nav className="container mx-auto flex items-center justify-between p-4">
@@ -71,19 +48,32 @@ export async function Navbar() {
           </Link>
         </div>
         <div className="flex items-center gap-x-4">
-          {navigation.map((item) => (
+          <Link
+            href="/blog"
+            className="text-sm font-medium transition-colors hover:text-primary text-muted-foreground flex gap-2 items-center"
+          >
+            <Newspaper size={18} />
+            Blog
+          </Link>
+          {isEditor ? (
             <Link
-              key={item.name}
-              href={item.href}
+              href="/blog/create"
               className="text-sm font-medium transition-colors hover:text-primary text-muted-foreground flex gap-2 items-center"
             >
-              {item.icon}
-              {item.name}
+              <PenLine size={18} />
+              Create Post
             </Link>
-          ))}
+          ) : (
+            <ReqWriter
+              id={user?.id}
+              variant={"ghost"}
+              className="text-sm font-medium transition-colors hover:text-primary text-muted-foreground flex gap-2 items-center"
+            />
+          )}
+
           <UserNav
             user={{
-              id: user.id ,
+              id: user.id,
               name: user.full_name, // Map full_name to name
               email: user.email,
               image: user.image,
