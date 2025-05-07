@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/server/auth/session";
+import { PostStatus } from "@prisma/client";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -18,6 +19,11 @@ export async function GET(
     const user = await prisma.user.findUnique({
       where: {
         id: Number(id),
+        Post: {
+          some: {
+            status: PostStatus.APPROVE
+          }
+        }
       },
       include: {
         Post: {

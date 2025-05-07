@@ -88,6 +88,7 @@ const UserProfile = ({
           user={user}
           loading={loadingScreen}
           currentUserId={currentUserId}
+          onUpdate={setUser}
         />
       </div>
       <div className="px-4  w-full">
