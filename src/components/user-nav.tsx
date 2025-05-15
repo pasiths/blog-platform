@@ -74,7 +74,7 @@ export function UserNav({ user }: UserNavProps) {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer flex items-center" asChild>
-          <Link href="#">
+          <Link href="/setting">
             <Settings className="mr-1 h-4 w-4" />
             Setting
           </Link>

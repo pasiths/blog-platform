@@ -21,9 +21,9 @@ export async function GET(
         id: Number(id),
         Post: {
           some: {
-            status: PostStatus.APPROVE
-          }
-        }
+            status: PostStatus.APPROVE,
+          },
+        },
       },
       include: {
         Post: {
@@ -90,6 +90,8 @@ export async function PUT(
       github,
       x,
       image,
+      username,
+      email,
     } = await req.json();
 
     const user = await prisma.user.findUnique({
@@ -99,6 +101,19 @@ export async function PUT(
     });
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+    if (username && username !== user.username) {
+      return NextResponse.json(
+        { error: "Username already taken" },
+        { status: 400 }
+      );
+    }
+
+    if (email && email !== user.email) {
+      return NextResponse.json(
+        { error: "Email already taken" },
+        { status: 400 }
+      );
     }
 
     const newUser = await prisma.user.update({
@@ -116,6 +131,8 @@ export async function PUT(
         github,
         x,
         image,
+        username: username || user.username,
+        email: email || user.email,
       },
       select: {
         id: true,
