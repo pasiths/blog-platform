@@ -19,6 +19,7 @@ export async function getCurrentUser() {
     select: {
       id: true,
       full_name: true,
+      username: true,
       email: true,
       image: true,
       role: true,
