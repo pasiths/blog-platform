@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/server/auth/session";
 import { PostStatus } from "@prisma/client";
+import bcrypt from "bcryptjs";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -49,9 +50,12 @@ export async function GET(
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    const isPsswdProtected = user.password ? true : false;
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...userWithoutPassword } = user;
-    return NextResponse.json(userWithoutPassword);
+    const userResponse = { ...userWithoutPassword, isPsswdProtected };
+    return NextResponse.json(userResponse);
   } catch (error) {
     console.error("Error fetching user:", error);
     return NextResponse.json(
@@ -92,6 +96,8 @@ export async function PUT(
       image,
       username,
       email,
+      password,
+      confirmPassword,
     } = await req.json();
 
     const user = await prisma.user.findUnique({
@@ -102,18 +108,67 @@ export async function PUT(
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-    if (username && username !== user.username) {
-      return NextResponse.json(
-        { error: "Username already taken" },
-        { status: 400 }
-      );
-    }
 
-    if (email && email !== user.email) {
-      return NextResponse.json(
-        { error: "Email already taken" },
-        { status: 400 }
-      );
+    let hashedPassword: string | undefined = undefined
+
+    if (username !== user.username || email !== user.email) {
+      if (!password) {
+        return NextResponse.json(
+          { error: "Password is required for protected accounts" },
+          { status: 400 }
+        );
+      }
+      const isPsswdProtected = user.password ? true : false;
+      if (!isPsswdProtected && password !== confirmPassword) {
+        return NextResponse.json(
+          { error: "Password and confirm password do not match" },
+          { status: 400 }
+        );
+      }
+      if( password && password === confirmPassword) {
+        hashedPassword = await bcrypt.hash(password, 10);
+      }
+
+      if (isPsswdProtected) {
+        const isValidPassword = await bcrypt.compare(
+          password ?? "",
+          user?.password as string
+        );
+        if (!isValidPassword) {
+          return NextResponse.json(
+            { error: "Invalid password" },
+            { status: 401 }
+          );
+        }
+      }
+
+      if (username !== user.username) {
+        const existingUser = await prisma.user.findUnique({
+          where: {
+            username,
+          },
+        });
+        if (existingUser) {
+          return NextResponse.json(
+            { error: "Username already taken" },
+            { status: 400 }
+          );
+        }
+      }
+
+      if (email !== user.email) {
+        const existingEmail = await prisma.user.findUnique({
+          where: {
+            email,
+          },
+        });
+        if (existingEmail) {
+          return NextResponse.json(
+            { error: "Email already taken" },
+            { status: 400 }
+          );
+        }
+      }
     }
 
     const newUser = await prisma.user.update({
@@ -133,6 +188,7 @@ export async function PUT(
         image,
         username: username || user.username,
         email: email || user.email,
+        password : hashedPassword ? await bcrypt.hash(password, 10) : user.password,
       },
       select: {
         id: true,
