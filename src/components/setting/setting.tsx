@@ -59,11 +59,14 @@ export function SettingCom({ user }: { user: any }) {
 
   const [isPasswordProtected, setIsPasswordProtected] = useState<boolean>(false);
 
-  const [oldPassword, setOldPassword] = useState<string>("");
+  const [currentPassword, setCurrentPassword] = useState<string>("");
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmNewPassword, setConfirmNewPassword] = useState<string>("");
 
   const [errorPassword, setErrorPassword] = useState<string | null>(null);
+
+  const [errorChangePassword, setErrorChangePassword] = useState<string | null>(null);
+  const [successChangePassword, setSuccessChangePassword] = useState<string | null>(null);
 
   const [passwordModalOpen, setPasswordModalOpen] = useState<boolean>(false);
 
@@ -236,6 +239,66 @@ export function SettingCom({ user }: { user: any }) {
     setConfirmNewPassword("")
     if (pendingSave) {
       await performSave();
+    }
+  }
+
+  const handleChangePassword = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorChangePassword(null);
+    setSuccessChangePassword(null);
+
+    if (isPasswordProtected && currentPassword === "") {
+      setErrorChangePassword("Current password is required.");
+      setLoading(false);
+      return;
+    }
+    if (newPassword === "" || confirmNewPassword === "") {
+      setErrorChangePassword("New password and confirm password cannot be empty.");
+      setLoading(false);
+
+      return;
+    }
+    if (newPassword !== confirmNewPassword) {
+      setErrorChangePassword("New password and confirm password do not match.");
+      setLoading(false);
+
+      return;
+    }
+    try {
+      const res = await fetch("/api/auth/change-password", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          currentPassword: isPasswordProtected ? currentPassword : "",
+          newPassword,
+          confirmNewPassword,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        setErrorChangePassword(errorData.message || "Failed to change password");
+        setLoading(false);
+        return;
+      }
+
+      setSuccessChangePassword("Password changed successfully");
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmNewPassword("");
+    }
+    catch (error) {
+      console.error("Error changing password:", error);
+      setErrorChangePassword("Failed to change password. Please try again.");
+    }
+    finally {
+      setLoading(false);
     }
   }
 
@@ -463,17 +526,17 @@ export function SettingCom({ user }: { user: any }) {
       </div>
       <Separator className="w-full" />
       <div className="space-y-2 px-4">
-        <h1 className="text-2xl font-bold">Change password</h1>
-        <form className="space-y-4 px-4">
+        <h1 className="text-2xl font-bold">{isPasswordProtected ? "Change password" : "Set Password"}</h1>
+        <form onSubmit={handleChangePassword} className="space-y-4 px-4">
           {isPasswordProtected && <div className="space-y-2">
             <Label className="text-sm text-muted-foreground">
-              Old password
+              Current password
             </Label>
             <Input
               className="w-full"
               type="password"
-              value={oldPassword}
-              onChange={(e) => setOldPassword(e.target.value)}
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
               disabled={loading}
               required={!isPasswordProtected}
             />
@@ -504,6 +567,13 @@ export function SettingCom({ user }: { user: any }) {
               required
             />
           </div>
+          <div className="">
+            {(errorChangePassword || successChangePassword) && (
+              <Alert variant={errorChangePassword ? "destructive" : "default"}>
+                <AlertDescription>{errorChangePassword ? errorChangePassword : successChangePassword}</AlertDescription>
+              </Alert>
+            )}
+          </div>
           <div className="flex items-center gap-2">
             <Button
               className="w-40 cursor-pointer"
@@ -517,7 +587,7 @@ export function SettingCom({ user }: { user: any }) {
               className="w-40 cursor-pointer"
               variant="default"
               type="button"
-              onClick={() => { setOldPassword(""); setNewPassword(""); setConfirmNewPassword(""); }}
+              onClick={() => { setCurrentPassword(""); setNewPassword(""); setConfirmNewPassword(""); }}
               disabled={loading}
             >
               Reset
