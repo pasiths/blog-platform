@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { Alert, AlertDescription } from "../ui/alert";
 import { PasswordPromptModal } from "./passwordPopup";
 import { signIn } from "next-auth/react";
+import { Skeleton } from "../ui/skeleton";
 
 interface User {
   id: number;
@@ -304,8 +305,98 @@ export function SettingCom({ user }: { user: any }) {
 
   if (loadingScreen) {
     return (
-      <div className="flex items-center justify-center">
-        <div className="text-2xl font-bold">Loading...</div>
+      <div className="space-y-4">
+        <div className="">
+          <Skeleton className="w-40 h-8" />
+        </div>
+        <div className="space-y-2 px-4">
+          <Skeleton className="w-40 h-8" />
+          <form className="space-y-4 px-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="relative w-ful min-h-60 group">
+                <Skeleton className="w-60 h-60 mx-auto rounded-full" />
+              </div>
+              <div className="space-y-2 w-full">
+                <div className="space-y-2">
+                  <Skeleton className="w-20 h-4" />
+                  <Skeleton className="w-full h-8" />
+                </div>
+                <div className="space-y-2">
+                  <Skeleton className="w-20 h-4" />
+                  <Skeleton className="w-full h-8" />
+                </div>
+                <div className="space-y-2">
+                  <Skeleton className="w-20 h-4" />
+                  <Skeleton className="w-full h-8" />
+                </div>
+              </div>
+            </div>
+            <Separator className="w-full" />
+            <div className="space-y-4 w-full">
+              <div className="space-y-2">
+                <Skeleton className="w-20 h-4" />
+                <Skeleton className="w-full h-16" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="w-20 h-4" />
+                <Skeleton className="w-full h-8" />
+              </div>
+              <Separator className="" />
+              <Skeleton className="w-40 h-8" />
+              <div className="space-y-2 pl-4">
+                <div className="flex items-center gap-2">
+                  <Skeleton className="w-6 h-6" />
+                  <Skeleton className="w-full h-8" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Skeleton className="w-6 h-6" />
+                  <Skeleton className="w-full h-8" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Skeleton className="w-6 h-6" />
+                  <Skeleton className="w-full h-8" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Skeleton className="w-6 h-6" />
+                  <Skeleton className="w-full h-8" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Skeleton className="w-6 h-6" />
+                  <Skeleton className="w-full h-8" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Skeleton className="w-6 h-6" />
+                  <Skeleton className="w-full h-8" />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Skeleton className="w-40 h-8" />
+              <Skeleton className="w-40 h-8" />
+            </div>
+          </form>
+        </div>
+        <Separator className="w-full" />
+        <div className="space-y-2 px-4">
+          <Skeleton className="w-50 h-8" />
+          <form className="space-y-4 px-4">
+            <Skeleton className="w-40 h-4" />
+            <Skeleton className="w-full h-8" />
+            <div className="space-y-2">
+              <Skeleton className="w-40 h-4" />
+              <Skeleton className="w-full h-8" />
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="w-40 h-4" />
+              <Skeleton className="w-full h-8" />
+            </div>
+            <div className="flex items-center gap-2">
+              <Skeleton className="w-40 h-8" />
+              <Skeleton className="w-40 h-8" />
+            </div>
+          </form>
+        </div>
       </div>
     );
   }
