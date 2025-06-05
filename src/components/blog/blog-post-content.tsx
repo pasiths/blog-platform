@@ -94,16 +94,17 @@ export function BlogPostContent({
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const queryParams = new URLSearchParams({
-          slug: slug,
-        }).toString();
+        // const queryParams = new URLSearchParams({
+        //   slug: slug,
+        // }).toString();
 
-        const res = await fetch(`/api/blogs/slug/[slug]?${queryParams}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+        const res = await fetch(`/api/blogs/slug/${slug}`, {
+  method: "GET",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
         if (!res.ok) {
           return null;
           // throw new Error("Failed to fetch posts");
