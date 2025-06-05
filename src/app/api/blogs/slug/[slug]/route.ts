@@ -3,12 +3,14 @@ import { prisma } from "@/lib/prisma";
 import { PostStatus, UserRole } from "@prisma/client";
 import { getCurrentUser } from "@/server/auth/session";
 
-export async function GET(req: NextRequest) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
+) {
   try {
+    const { slug } = await params;
     const { searchParams } = new URL(req.url);
-    const slug = searchParams.get("slug") || undefined;
-    let postStatus =
-      (searchParams.get("postStatus") as PostStatus) || undefined;
+    let postStatus = searchParams.get("postStatus") as PostStatus | undefined;
 
     const user = await getCurrentUser();
     if (user?.role !== UserRole.ADMIN) {
